@@ -1,0 +1,108 @@
+{
+  "experiment": "F: Without estimated_delivery_days",
+  "hypothesis": "If model collapses without estimated_delivery_days, we are wrapping a heuristic",
+  "baseline": {
+    "train": {
+      "pr_auc": 0.3795704959485539,
+      "roc_auc": 0.8300365851222087,
+      "f1": 0.36649553300723614,
+      "precision": 0.24565111364005854,
+      "recall": 0.7213558243157224,
+      "recall_at_50_precision": 0.2608211330362826,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 4533,
+        "fp": 13920,
+        "fn": 1751,
+        "tn": 51171
+      }
+    },
+    "val": {
+      "pr_auc": 0.14108594415357978,
+      "roc_auc": 0.7524172434694936,
+      "f1": 0.19464033850493653,
+      "precision": 0.17829457364341086,
+      "recall": 0.21428571428571427,
+      "recall_at_50_precision": 0.0015527950310559005,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 138,
+        "fp": 636,
+        "fn": 506,
+        "tn": 11691
+      }
+    },
+    "test": {
+      "pr_auc": 0.13075038528770272,
+      "roc_auc": 0.7069927450552438,
+      "f1": 0.1967520299812617,
+      "precision": 0.1390728476821192,
+      "recall": 0.33617929562433296,
+      "recall_at_50_precision": 0.0,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 315,
+        "fp": 1950,
+        "fn": 622,
+        "tn": 9766
+      }
+    },
+    "threshold": 0.1,
+    "best_iteration": 687,
+    "overfit_ratio": 2.69
+  },
+  "ablated": {
+    "train": {
+      "pr_auc": 0.29858774490665924,
+      "roc_auc": 0.7866486893866386,
+      "f1": 0.328731867103416,
+      "precision": 0.21771694214876033,
+      "recall": 0.6707511139401655,
+      "recall_at_50_precision": 0.08131763208147677,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 4215,
+        "fp": 15145,
+        "fn": 2069,
+        "tn": 49946
+      }
+    },
+    "val": {
+      "pr_auc": 0.07583998665973823,
+      "roc_auc": 0.6013886222587694,
+      "f1": 0.04377880184331797,
+      "precision": 0.08482142857142858,
+      "recall": 0.029503105590062112,
+      "recall_at_50_precision": 0.0,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 19,
+        "fp": 205,
+        "fn": 625,
+        "tn": 12122
+      }
+    },
+    "test": {
+      "pr_auc": 0.07450453069599718,
+      "roc_auc": 0.5249221344134193,
+      "f1": 0.027280477408354646,
+      "precision": 0.06779661016949153,
+      "recall": 0.017075773745997867,
+      "recall_at_50_precision": 0.0,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 16,
+        "fp": 220,
+        "fn": 921,
+        "tn": 11496
+      }
+    },
+    "threshold": 0.1,
+    "best_iteration": 326,
+    "overfit_ratio": 3.94
+  },
+  "test_prauc_change": -0.0562,
+  "test_prauc_pct_drop": 43.0,
+  "test_rocauc_change": -0.1821,
+  "conclusion": "SIGNIFICANT DEPENDENCY: 43% drop \u2014 estimated_delivery_days is critical but other features contribute"
+}

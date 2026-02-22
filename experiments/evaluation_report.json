@@ -603,9 +603,8 @@
   },
   "practical_limitations": [
     "Model relies on platform-set estimated delivery dates; if estimation logic changes, model needs retraining.",
-    "New sellers with no history fall back to global averages \u2014 predictions less reliable for them.",
     "Sparse-data states (RR, AP, AC) may have poorly calibrated predictions.",
-    "Data covers 2016\u20132018; post-2018 logistics changes (COVID, new carriers) are not captured.",
+    "Data covers 2016-2018; post-2018 logistics changes (COVID, new carriers) are not captured.",
     "At threshold 0.1, the model trades off precision vs recall \u2014 adjust threshold based on cost of false alarms vs missed late orders."
   ]
 }

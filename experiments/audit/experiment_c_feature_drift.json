@@ -1,0 +1,114 @@
+{
+  "experiment": "C: Feature distribution drift (PSI)",
+  "hypothesis": "Key features shift distribution across temporal splits",
+  "features_analyzed": 10,
+  "features_with_drift": 3,
+  "drift_details": [
+    {
+      "feature": "estimated_delivery_days",
+      "psi_train_val": 0.141,
+      "psi_train_test": 0.63,
+      "ks_stat_val": 0.3642,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.395,
+      "ks_pval_test": 0.0,
+      "severity": "high_drift"
+    },
+    {
+      "feature": "purchase_month",
+      "psi_train_val": 8.0057,
+      "psi_train_test": 7.8758,
+      "ks_stat_val": 0.9462,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.9462,
+      "ks_pval_test": 0.0,
+      "severity": "high_drift"
+    },
+    {
+      "feature": "total_freight",
+      "psi_train_val": 0.2603,
+      "psi_train_test": 0.2859,
+      "ks_stat_val": 0.1652,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.2032,
+      "ks_pval_test": 0.0,
+      "severity": "high_drift"
+    },
+    {
+      "feature": "product_volume_cm3",
+      "psi_train_val": 0.0156,
+      "psi_train_test": 0.0317,
+      "ks_stat_val": 0.0908,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.0884,
+      "ks_pval_test": 0.0,
+      "severity": "stable"
+    },
+    {
+      "feature": "product_weight_g",
+      "psi_train_val": 0.0133,
+      "psi_train_test": 0.0321,
+      "ks_stat_val": 0.0736,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.0882,
+      "ks_pval_test": 0.0,
+      "severity": "stable"
+    },
+    {
+      "feature": "freight_price_ratio",
+      "psi_train_val": 0.0075,
+      "psi_train_test": 0.0082,
+      "ks_stat_val": 0.077,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.046,
+      "ks_pval_test": 5.1e-05,
+      "severity": "stable"
+    },
+    {
+      "feature": "avg_price",
+      "psi_train_val": 0.0082,
+      "psi_train_test": 0.0047,
+      "ks_stat_val": 0.0572,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.037,
+      "ks_pval_test": 0.002128,
+      "severity": "stable"
+    },
+    {
+      "feature": "total_payment",
+      "psi_train_val": 0.0052,
+      "psi_train_test": 0.0023,
+      "ks_stat_val": 0.0582,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.0416,
+      "ks_pval_test": 0.000349,
+      "severity": "stable"
+    },
+    {
+      "feature": "total_price",
+      "psi_train_val": 0.0062,
+      "psi_train_test": 0.0084,
+      "ks_stat_val": 0.056,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.0328,
+      "ks_pval_test": 0.009219,
+      "severity": "stable"
+    },
+    {
+      "feature": "product_description_lenght",
+      "psi_train_val": 0.0121,
+      "psi_train_test": 0.019,
+      "ks_stat_val": 0.0564,
+      "ks_pval_val": 0.0,
+      "ks_stat_test": 0.0618,
+      "ks_pval_test": 0.0,
+      "severity": "stable"
+    }
+  ],
+  "unstable_features": [
+    "estimated_delivery_days",
+    "purchase_month",
+    "total_freight"
+  ],
+  "conclusion": "DRIFT DETECTED in 3 features: ['estimated_delivery_days', 'purchase_month', 'total_freight']. Consider removing or engineering more robust versions."
+}
