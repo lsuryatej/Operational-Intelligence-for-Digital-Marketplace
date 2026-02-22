@@ -1,0 +1,81 @@
+{
+  "experiment_name": "lightgbm_v1",
+  "timestamp": "20260222_162022",
+  "parameters": {
+    "n_estimators": 1000,
+    "learning_rate": 0.05,
+    "max_depth": 6,
+    "best_iteration": 561,
+    "optimal_threshold": 0.1
+  },
+  "metrics": {
+    "train": {
+      "pr_auc": 0.4644824873505874,
+      "roc_auc": 0.8670126976715289,
+      "f1": 0.3983218163869694,
+      "precision": 0.2685822054581762,
+      "recall": 0.7705283259070655,
+      "recall_at_50_precision": 0.42297899427116487,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 4842,
+        "fp": 13186,
+        "fn": 1442,
+        "tn": 51905
+      }
+    },
+    "validation": {
+      "pr_auc": 0.13661378798388163,
+      "roc_auc": 0.7490415172068382,
+      "f1": 0.1882510013351135,
+      "precision": 0.16510538641686182,
+      "recall": 0.21894409937888198,
+      "recall_at_50_precision": 0.0,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 141,
+        "fp": 713,
+        "fn": 503,
+        "tn": 11614
+      }
+    },
+    "test": {
+      "pr_auc": 0.13445055526835784,
+      "roc_auc": 0.7101266345123453,
+      "f1": 0.21052631578947367,
+      "precision": 0.1456032719836401,
+      "recall": 0.3799359658484525,
+      "recall_at_50_precision": 0.0010672358591248667,
+      "threshold": 0.1,
+      "confusion_matrix": {
+        "tp": 356,
+        "fp": 2089,
+        "fn": 581,
+        "tn": 9627
+      }
+    }
+  },
+  "feature_importance_top20": {
+    "estimated_delivery_days": 3853,
+    "product_category_name_english": 3332,
+    "purchase_month": 2474,
+    "total_freight": 2311,
+    "customer_state": 2106,
+    "product_description_lenght": 1983,
+    "product_volume_cm3": 1725,
+    "freight_price_ratio": 1560,
+    "product_weight_g": 1492,
+    "product_name_lenght": 1274,
+    "product_width_cm": 1264,
+    "product_length_cm": 1246,
+    "product_height_cm": 1194,
+    "avg_price": 1083,
+    "purchase_hour": 991,
+    "total_payment": 974,
+    "seller_state": 878,
+    "total_price": 778,
+    "product_photos_qty": 638,
+    "purchase_day_of_week": 636
+  },
+  "notes": "Primary LightGBM model with temporal split and seller history features."
+}

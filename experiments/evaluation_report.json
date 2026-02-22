@@ -1,0 +1,611 @@
+{
+  "model": "LightGBM",
+  "threshold": 0.1,
+  "test_set_size": 12653,
+  "test_late_rate": 0.07405358413024579,
+  "core_metrics": {
+    "pr_auc": 0.13445055526835784,
+    "roc_auc": 0.7101266345123453,
+    "f1": 0.21052631578947367,
+    "precision": 0.1456032719836401,
+    "recall": 0.3799359658484525,
+    "recall_at_50_precision": 0.0010672358591248667,
+    "threshold": 0.1,
+    "confusion_matrix": {
+      "tp": 356,
+      "fp": 2089,
+      "fn": 581,
+      "tn": 9627
+    }
+  },
+  "classification_report": {
+    "on_time": {
+      "precision": 0.943083855799373,
+      "recall": 0.8216968248548993,
+      "f1-score": 0.8782156540777231,
+      "support": 11716.0
+    },
+    "late": {
+      "precision": 0.1456032719836401,
+      "recall": 0.3799359658484525,
+      "f1-score": 0.21052631578947367,
+      "support": 937.0
+    },
+    "accuracy": 0.7889828499170157,
+    "macro avg": {
+      "precision": 0.5443435638915066,
+      "recall": 0.6008163953516759,
+      "f1-score": 0.5443709849335984,
+      "support": 12653.0
+    },
+    "weighted avg": {
+      "precision": 0.884027560293537,
+      "recall": 0.7889828499170157,
+      "f1-score": 0.8287708654919261,
+      "support": 12653.0
+    }
+  },
+  "segment_analysis": {
+    "customer_state": [
+      {
+        "segment": "CE",
+        "count": 142,
+        "actual_late_rate": 0.014084507042253521,
+        "predicted_late_rate": 0.39436619718309857,
+        "pr_auc": 0.03588516746411483,
+        "f1": 0.06896551724137931,
+        "recall": 1.0,
+        "precision": 0.03571428571428571
+      },
+      {
+        "segment": "MT",
+        "count": 88,
+        "actual_late_rate": 0.011363636363636364,
+        "predicted_late_rate": 0.022727272727272728,
+        "pr_auc": 0.043478260869565216,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0
+      },
+      {
+        "segment": "MG",
+        "count": 1363,
+        "actual_late_rate": 0.02421129860601614,
+        "predicted_late_rate": 0.02421129860601614,
+        "pr_auc": 0.05380898067297329,
+        "f1": 0.06060606060606061,
+        "recall": 0.06060606060606061,
+        "precision": 0.06060606060606061
+      },
+      {
+        "segment": "PA",
+        "count": 102,
+        "actual_late_rate": 0.029411764705882353,
+        "predicted_late_rate": 0.696078431372549,
+        "pr_auc": 0.0580623720237138,
+        "f1": 0.08108108108108109,
+        "recall": 1.0,
+        "precision": 0.04225352112676056
+      },
+      {
+        "segment": "DF",
+        "count": 309,
+        "actual_late_rate": 0.045307443365695796,
+        "predicted_late_rate": 0.11326860841423948,
+        "pr_auc": 0.062431574985107575,
+        "f1": 0.12244897959183673,
+        "recall": 0.21428571428571427,
+        "precision": 0.08571428571428572
+      },
+      {
+        "segment": "PE",
+        "count": 219,
+        "actual_late_rate": 0.0547945205479452,
+        "predicted_late_rate": 0.7214611872146118,
+        "pr_auc": 0.0697201980391692,
+        "f1": 0.12941176470588237,
+        "recall": 0.9166666666666666,
+        "precision": 0.06962025316455696
+      },
+      {
+        "segment": "PR",
+        "count": 649,
+        "actual_late_rate": 0.03697996918335902,
+        "predicted_late_rate": 0.030816640986132512,
+        "pr_auc": 0.07702741224290083,
+        "f1": 0.045454545454545456,
+        "recall": 0.041666666666666664,
+        "precision": 0.05
+      },
+      {
+        "segment": "GO",
+        "count": 233,
+        "actual_late_rate": 0.04721030042918455,
+        "predicted_late_rate": 0.21888412017167383,
+        "pr_auc": 0.0780094534118925,
+        "f1": 0.12903225806451613,
+        "recall": 0.36363636363636365,
+        "precision": 0.0784313725490196
+      },
+      {
+        "segment": "ES",
+        "count": 229,
+        "actual_late_rate": 0.056768558951965066,
+        "predicted_late_rate": 0.38427947598253276,
+        "pr_auc": 0.09115919631723202,
+        "f1": 0.1188118811881188,
+        "recall": 0.46153846153846156,
+        "precision": 0.06818181818181818
+      },
+      {
+        "segment": "RS",
+        "count": 609,
+        "actual_late_rate": 0.03284072249589491,
+        "predicted_late_rate": 0.06403940886699508,
+        "pr_auc": 0.1027109950322176,
+        "f1": 0.1016949152542373,
+        "recall": 0.15,
+        "precision": 0.07692307692307693
+      },
+      {
+        "segment": "BA",
+        "count": 412,
+        "actual_late_rate": 0.04611650485436893,
+        "predicted_late_rate": 0.7184466019417476,
+        "pr_auc": 0.11192124064936854,
+        "f1": 0.11428571428571428,
+        "recall": 0.9473684210526315,
+        "precision": 0.060810810810810814
+      },
+      {
+        "segment": "PI",
+        "count": 52,
+        "actual_late_rate": 0.057692307692307696,
+        "predicted_late_rate": 0.4807692307692308,
+        "pr_auc": 0.12521688837478312,
+        "f1": 0.14285714285714285,
+        "recall": 0.6666666666666666,
+        "precision": 0.08
+      },
+      {
+        "segment": "RJ",
+        "count": 1432,
+        "actual_late_rate": 0.05935754189944134,
+        "predicted_late_rate": 0.19972067039106145,
+        "pr_auc": 0.12534727539650042,
+        "f1": 0.1778975741239892,
+        "recall": 0.38823529411764707,
+        "precision": 0.11538461538461539
+      },
+      {
+        "segment": "PB",
+        "count": 79,
+        "actual_late_rate": 0.05063291139240506,
+        "predicted_late_rate": 0.8354430379746836,
+        "pr_auc": 0.13148539366680298,
+        "f1": 0.11428571428571428,
+        "recall": 1.0,
+        "precision": 0.06060606060606061
+      },
+      {
+        "segment": "SC",
+        "count": 401,
+        "actual_late_rate": 0.0399002493765586,
+        "predicted_late_rate": 0.2518703241895262,
+        "pr_auc": 0.1477696738235174,
+        "f1": 0.10256410256410256,
+        "recall": 0.375,
+        "precision": 0.0594059405940594
+      },
+      {
+        "segment": "SP",
+        "count": 5944,
+        "actual_late_rate": 0.10750336473755047,
+        "predicted_late_rate": 0.15679676985195154,
+        "pr_auc": 0.23004250967353762,
+        "f1": 0.2928071292170592,
+        "recall": 0.3599374021909233,
+        "precision": 0.24678111587982832
+      },
+      {
+        "segment": "MA",
+        "count": 68,
+        "actual_late_rate": 0.14705882352941177,
+        "predicted_late_rate": 0.75,
+        "pr_auc": 0.3232119468800653,
+        "f1": 0.32786885245901637,
+        "recall": 1.0,
+        "precision": 0.19607843137254902
+      },
+      {
+        "segment": "MS",
+        "count": 84,
+        "actual_late_rate": 0.17857142857142858,
+        "predicted_late_rate": 0.21428571428571427,
+        "pr_auc": 0.48183581124757596,
+        "f1": 0.5454545454545454,
+        "recall": 0.6,
+        "precision": 0.5
+      },
+      {
+        "segment": "RN",
+        "count": 50,
+        "actual_late_rate": 0.02,
+        "predicted_late_rate": 0.86,
+        "pr_auc": 0.5,
+        "f1": 0.045454545454545456,
+        "recall": 1.0,
+        "precision": 0.023255813953488372
+      }
+    ],
+    "product_category_name_english": [
+      {
+        "segment": "pet_shop",
+        "count": 310,
+        "actual_late_rate": 0.05806451612903226,
+        "predicted_late_rate": 0.12903225806451613,
+        "pr_auc": 0.06951986094071104,
+        "f1": 0.06896551724137931,
+        "recall": 0.1111111111111111,
+        "precision": 0.05
+      },
+      {
+        "segment": "perfumery",
+        "count": 372,
+        "actual_late_rate": 0.053763440860215055,
+        "predicted_late_rate": 0.12903225806451613,
+        "pr_auc": 0.10142367273061888,
+        "f1": 0.11764705882352941,
+        "recall": 0.2,
+        "precision": 0.08333333333333333
+      },
+      {
+        "segment": "auto",
+        "count": 669,
+        "actual_late_rate": 0.07473841554559044,
+        "predicted_late_rate": 0.21225710014947682,
+        "pr_auc": 0.10153601355209543,
+        "f1": 0.14583333333333334,
+        "recall": 0.28,
+        "precision": 0.09859154929577464
+      },
+      {
+        "segment": "sports_leisure",
+        "count": 846,
+        "actual_late_rate": 0.06028368794326241,
+        "predicted_late_rate": 0.15602836879432624,
+        "pr_auc": 0.1076156088073337,
+        "f1": 0.17486338797814208,
+        "recall": 0.3137254901960784,
+        "precision": 0.12121212121212122
+      },
+      {
+        "segment": "garden_tools",
+        "count": 274,
+        "actual_late_rate": 0.040145985401459854,
+        "predicted_late_rate": 0.15693430656934307,
+        "pr_auc": 0.11094085917197713,
+        "f1": 0.18518518518518517,
+        "recall": 0.45454545454545453,
+        "precision": 0.11627906976744186
+      },
+      {
+        "segment": "fashion_bags_accessories",
+        "count": 196,
+        "actual_late_rate": 0.061224489795918366,
+        "predicted_late_rate": 0.25510204081632654,
+        "pr_auc": 0.11666155283900446,
+        "f1": 0.22580645161290322,
+        "recall": 0.5833333333333334,
+        "precision": 0.14
+      },
+      {
+        "segment": "telephony",
+        "count": 447,
+        "actual_late_rate": 0.07606263982102908,
+        "predicted_late_rate": 0.2371364653243848,
+        "pr_auc": 0.11774345772654217,
+        "f1": 0.15714285714285714,
+        "recall": 0.3235294117647059,
+        "precision": 0.10377358490566038
+      },
+      {
+        "segment": "bed_bath_table",
+        "count": 1062,
+        "actual_late_rate": 0.05649717514124294,
+        "predicted_late_rate": 0.1902071563088512,
+        "pr_auc": 0.12049250772663389,
+        "f1": 0.16793893129770993,
+        "recall": 0.36666666666666664,
+        "precision": 0.10891089108910891
+      },
+      {
+        "segment": "home_construction",
+        "count": 96,
+        "actual_late_rate": 0.08333333333333333,
+        "predicted_late_rate": 0.14583333333333334,
+        "pr_auc": 0.12145350550681433,
+        "f1": 0.09090909090909091,
+        "recall": 0.125,
+        "precision": 0.07142857142857142
+      },
+      {
+        "segment": "construction_tools_construction",
+        "count": 224,
+        "actual_late_rate": 0.09375,
+        "predicted_late_rate": 0.33035714285714285,
+        "pr_auc": 0.12586543023970398,
+        "f1": 0.21052631578947367,
+        "recall": 0.47619047619047616,
+        "precision": 0.13513513513513514
+      },
+      {
+        "segment": "baby",
+        "count": 410,
+        "actual_late_rate": 0.08780487804878048,
+        "predicted_late_rate": 0.22926829268292684,
+        "pr_auc": 0.12756328800349892,
+        "f1": 0.15384615384615385,
+        "recall": 0.2777777777777778,
+        "precision": 0.10638297872340426
+      },
+      {
+        "segment": "electronics",
+        "count": 256,
+        "actual_late_rate": 0.0625,
+        "predicted_late_rate": 0.1640625,
+        "pr_auc": 0.13014410066333496,
+        "f1": 0.20689655172413793,
+        "recall": 0.375,
+        "precision": 0.14285714285714285
+      },
+      {
+        "segment": "watches_gifts",
+        "count": 894,
+        "actual_late_rate": 0.05592841163310962,
+        "predicted_late_rate": 0.2606263982102908,
+        "pr_auc": 0.13955036511688687,
+        "f1": 0.24028268551236748,
+        "recall": 0.68,
+        "precision": 0.1459227467811159
+      },
+      {
+        "segment": "toys",
+        "count": 295,
+        "actual_late_rate": 0.09491525423728814,
+        "predicted_late_rate": 0.09830508474576272,
+        "pr_auc": 0.14783003870683056,
+        "f1": 0.07017543859649122,
+        "recall": 0.07142857142857142,
+        "precision": 0.06896551724137931
+      },
+      {
+        "segment": "home_appliances",
+        "count": 149,
+        "actual_late_rate": 0.06040268456375839,
+        "predicted_late_rate": 0.18120805369127516,
+        "pr_auc": 0.14791195707355276,
+        "f1": 0.2222222222222222,
+        "recall": 0.4444444444444444,
+        "precision": 0.14814814814814814
+      },
+      {
+        "segment": "food",
+        "count": 160,
+        "actual_late_rate": 0.125,
+        "predicted_late_rate": 0.1625,
+        "pr_auc": 0.15071124448268058,
+        "f1": 0.08695652173913043,
+        "recall": 0.1,
+        "precision": 0.07692307692307693
+      },
+      {
+        "segment": "computers_accessories",
+        "count": 762,
+        "actual_late_rate": 0.06430446194225722,
+        "predicted_late_rate": 0.08923884514435695,
+        "pr_auc": 0.15878725822887868,
+        "f1": 0.15384615384615385,
+        "recall": 0.1836734693877551,
+        "precision": 0.1323529411764706
+      },
+      {
+        "segment": "furniture_decor",
+        "count": 676,
+        "actual_late_rate": 0.06360946745562131,
+        "predicted_late_rate": 0.17899408284023668,
+        "pr_auc": 0.162910578246037,
+        "f1": 0.21951219512195122,
+        "recall": 0.4186046511627907,
+        "precision": 0.1487603305785124
+      },
+      {
+        "segment": "luggage_accessories",
+        "count": 112,
+        "actual_late_rate": 0.08928571428571429,
+        "predicted_late_rate": 0.05357142857142857,
+        "pr_auc": 0.17975987314693004,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0
+      },
+      {
+        "segment": "health_beauty",
+        "count": 1467,
+        "actual_late_rate": 0.1029311520109066,
+        "predicted_late_rate": 0.2951601908657123,
+        "pr_auc": 0.1849399410057401,
+        "f1": 0.3013698630136986,
+        "recall": 0.5827814569536424,
+        "precision": 0.20323325635103925
+      },
+      {
+        "segment": "small_appliances",
+        "count": 59,
+        "actual_late_rate": 0.06779661016949153,
+        "predicted_late_rate": 0.0847457627118644,
+        "pr_auc": 0.18501984126984128,
+        "f1": 0.2222222222222222,
+        "recall": 0.25,
+        "precision": 0.2
+      },
+      {
+        "segment": "books_general_interest",
+        "count": 58,
+        "actual_late_rate": 0.13793103448275862,
+        "predicted_late_rate": 0.05172413793103448,
+        "pr_auc": 0.19602908976387856,
+        "f1": 0.0,
+        "recall": 0.0,
+        "precision": 0.0
+      },
+      {
+        "segment": "stationery",
+        "count": 324,
+        "actual_late_rate": 0.10185185185185185,
+        "predicted_late_rate": 0.21296296296296297,
+        "pr_auc": 0.21114244923548534,
+        "f1": 0.29411764705882354,
+        "recall": 0.45454545454545453,
+        "precision": 0.21739130434782608
+      },
+      {
+        "segment": "consoles_games",
+        "count": 105,
+        "actual_late_rate": 0.05714285714285714,
+        "predicted_late_rate": 0.13333333333333333,
+        "pr_auc": 0.22419731219073324,
+        "f1": 0.2,
+        "recall": 0.3333333333333333,
+        "precision": 0.14285714285714285
+      },
+      {
+        "segment": "housewares",
+        "count": 1017,
+        "actual_late_rate": 0.07571288102261553,
+        "predicted_late_rate": 0.16125860373647985,
+        "pr_auc": 0.22508205201046852,
+        "f1": 0.2572614107883817,
+        "recall": 0.4025974025974026,
+        "precision": 0.18902439024390244
+      },
+      {
+        "segment": "musical_instruments",
+        "count": 71,
+        "actual_late_rate": 0.08450704225352113,
+        "predicted_late_rate": 0.3380281690140845,
+        "pr_auc": 0.22583471985285342,
+        "f1": 0.2,
+        "recall": 0.5,
+        "precision": 0.125
+      },
+      {
+        "segment": "office_furniture",
+        "count": 87,
+        "actual_late_rate": 0.13793103448275862,
+        "predicted_late_rate": 0.27586206896551724,
+        "pr_auc": 0.24691478637099856,
+        "f1": 0.2777777777777778,
+        "recall": 0.4166666666666667,
+        "precision": 0.20833333333333334
+      },
+      {
+        "segment": "construction_tools_lights",
+        "count": 93,
+        "actual_late_rate": 0.11827956989247312,
+        "predicted_late_rate": 0.25806451612903225,
+        "pr_auc": 0.26869253918462616,
+        "f1": 0.2857142857142857,
+        "recall": 0.45454545454545453,
+        "precision": 0.20833333333333334
+      },
+      {
+        "segment": "books_technical",
+        "count": 55,
+        "actual_late_rate": 0.14545454545454545,
+        "predicted_late_rate": 0.09090909090909091,
+        "pr_auc": 0.3061464397671294,
+        "f1": 0.15384615384615385,
+        "recall": 0.125,
+        "precision": 0.2
+      },
+      {
+        "segment": "cool_stuff",
+        "count": 232,
+        "actual_late_rate": 0.07758620689655173,
+        "predicted_late_rate": 0.15086206896551724,
+        "pr_auc": 0.31516877494919365,
+        "f1": 0.33962264150943394,
+        "recall": 0.5,
+        "precision": 0.2571428571428571
+      },
+      {
+        "segment": "furniture_living_room",
+        "count": 85,
+        "actual_late_rate": 0.12941176470588237,
+        "predicted_late_rate": 0.1411764705882353,
+        "pr_auc": 0.32601067659551897,
+        "f1": 0.17391304347826086,
+        "recall": 0.18181818181818182,
+        "precision": 0.16666666666666666
+      }
+    ],
+    "is_same_state": [
+      {
+        "segment": 0,
+        "count": 7425,
+        "actual_late_rate": 0.040134680134680134,
+        "predicted_late_rate": 0.20484848484848484,
+        "pr_auc": 0.08283251967588255,
+        "f1": 0.1451346893897746,
+        "recall": 0.4429530201342282,
+        "precision": 0.08678500986193294
+      },
+      {
+        "segment": 1,
+        "count": 5228,
+        "actual_late_rate": 0.1222264728385616,
+        "predicted_late_rate": 0.17674062739097168,
+        "pr_auc": 0.2385293994309578,
+        "f1": 0.2866282789507358,
+        "recall": 0.350547730829421,
+        "precision": 0.24242424242424243
+      }
+    ]
+  },
+  "error_analysis": {
+    "total_orders": 12653,
+    "false_positives": 2089,
+    "false_negatives": 581,
+    "true_positives": 356,
+    "fn_delay_stats": {
+      "mean_delay_days": 4.3211569492254736,
+      "median_delay_days": 1.9650810185185186,
+      "pct_under_3_days_late": 0.5851979345955249,
+      "pct_over_10_days_late": 0.08777969018932874
+    },
+    "fn_top_states": {
+      "SP": 409,
+      "RJ": 52,
+      "MG": 31,
+      "PR": 23,
+      "RS": 17
+    },
+    "fn_top_categories": {
+      "health_beauty": 63,
+      "housewares": 46,
+      "computers_accessories": 40,
+      "bed_bath_table": 38,
+      "auto": 36
+    },
+    "fp_avg_estimated_days": 15.435892478015356,
+    "fp_same_state_pct": 0.3350885591191958
+  },
+  "practical_limitations": [
+    "Model relies on platform-set estimated delivery dates; if estimation logic changes, model needs retraining.",
+    "New sellers with no history fall back to global averages \u2014 predictions less reliable for them.",
+    "Sparse-data states (RR, AP, AC) may have poorly calibrated predictions.",
+    "Data covers 2016\u20132018; post-2018 logistics changes (COVID, new carriers) are not captured.",
+    "At threshold 0.1, the model trades off precision vs recall \u2014 adjust threshold based on cost of false alarms vs missed late orders."
+  ]
+}

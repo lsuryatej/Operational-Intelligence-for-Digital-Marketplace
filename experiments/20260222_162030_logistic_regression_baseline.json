@@ -1,0 +1,57 @@
+{
+  "experiment_name": "logistic_regression_baseline",
+  "timestamp": "20260222_162030",
+  "parameters": {
+    "max_iter": 1000,
+    "optimal_threshold": 0.64
+  },
+  "metrics": {
+    "train": {
+      "pr_auc": 0.16227427481362666,
+      "roc_auc": 0.6670371744944141,
+      "f1": 0.2245759778470059,
+      "precision": 0.198750153167504,
+      "recall": 0.25811584977721197,
+      "recall_at_50_precision": 0.00015913430935709738,
+      "threshold": 0.64,
+      "confusion_matrix": {
+        "tp": 1622,
+        "fp": 6539,
+        "fn": 4662,
+        "tn": 58552
+      }
+    },
+    "validation": {
+      "pr_auc": 0.12947530543170718,
+      "roc_auc": 0.7401355253604294,
+      "f1": 0.22695035460992907,
+      "precision": 0.1588089330024814,
+      "recall": 0.39751552795031053,
+      "recall_at_50_precision": 0.0,
+      "threshold": 0.64,
+      "confusion_matrix": {
+        "tp": 256,
+        "fp": 1356,
+        "fn": 388,
+        "tn": 10971
+      }
+    },
+    "test": {
+      "pr_auc": 0.08577731141899207,
+      "roc_auc": 0.5581017740017846,
+      "f1": 0.09969122187913543,
+      "precision": 0.06283013622463164,
+      "recall": 0.24119530416221985,
+      "recall_at_50_precision": 0.0,
+      "threshold": 0.64,
+      "confusion_matrix": {
+        "tp": 226,
+        "fp": 3371,
+        "fn": 711,
+        "tn": 8345
+      }
+    }
+  },
+  "feature_importance_top20": null,
+  "notes": "Baseline logistic regression for comparison."
+}
