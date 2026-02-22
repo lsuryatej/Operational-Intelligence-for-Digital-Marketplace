@@ -23,7 +23,7 @@ from sklearn.metrics import (
     precision_recall_curve,
     roc_auc_score,
 )
-from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 # Allow running as ``python src/train.py``
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -159,17 +159,20 @@ def train_lightgbm(
     distribution is mild enough for gradient boosting to learn
     effectively on its own.  Instead we compensate for the imbalance
     by tuning the classification threshold post-hoc.
+
+    AUDIT FIX: Regularised from depth-7/63-leaves to depth-5/31-leaves
+    to reduce the 3.4x train/val overfit ratio.
     """
     model = lgb.LGBMClassifier(
         n_estimators=2000,
         learning_rate=0.01,
-        max_depth=7,
-        num_leaves=63,
+        max_depth=5,
+        num_leaves=31,
         subsample=0.7,
         colsample_bytree=0.7,
-        min_child_samples=30,
-        reg_alpha=0.1,
-        reg_lambda=1.0,
+        min_child_samples=50,
+        reg_alpha=0.5,
+        reg_lambda=2.0,
         random_state=42,
         n_jobs=-1,
         verbose=-1,
@@ -200,17 +203,37 @@ def train_logistic_regression(
     X_train: pd.DataFrame,
     y_train: pd.Series,
 ) -> tuple:
-    """Train a logistic regression baseline.  Returns (model, scaler, label_encoders)."""
+    """Train a logistic regression baseline.
+
+    Returns (model, scaler, ohe_encoder).
+
+    AUDIT FIX: Replaced LabelEncoder with OneHotEncoder to avoid:
+    1) Imposing arbitrary ordinal relationships on nominal features
+    2) Double-encoding bug where pd.Categorical codes were re-encoded
+    """
     X = X_train.copy()
-    label_encoders = {}
+
+    # Convert categoricals back to raw strings before encoding
     for col in CATEGORICAL_FEATURES:
         if col in X.columns:
-            le = LabelEncoder()
-            X[col] = le.fit_transform(X[col].astype(str))
-            label_encoders[col] = le
+            X[col] = X[col].astype(str)
+
+    # One-hot encode categoricals (handles unseen categories gracefully)
+    ohe = OneHotEncoder(
+        sparse_output=False,
+        handle_unknown="ignore",
+        drop="first",  # avoid multicollinearity
+    )
+    cat_cols = [c for c in CATEGORICAL_FEATURES if c in X.columns]
+    num_cols = [c for c in X.columns if c not in cat_cols]
+
+    X_cat = ohe.fit_transform(X[cat_cols])
+    X_num = X[num_cols].values
 
     scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
+    X_num_scaled = scaler.fit_transform(X_num)
+
+    X_combined = np.hstack([X_num_scaled, X_cat])
 
     n_pos = y_train.sum()
     n_neg = len(y_train) - n_pos
@@ -220,27 +243,31 @@ def train_logistic_regression(
         class_weight={0: 1.0, 1: n_neg / n_pos},
         random_state=42,
     )
-    model.fit(X_scaled, y_train)
-    return model, scaler, label_encoders
+    model.fit(X_combined, y_train)
+    return model, scaler, ohe, cat_cols, num_cols
 
 
 def predict_lr(
-    model, scaler, label_encoders,
+    model, scaler, ohe,
+    cat_cols: list[str],
+    num_cols: list[str],
     X: pd.DataFrame,
 ) -> np.ndarray:
-    """Predict probabilities with the logistic regression baseline."""
+    """Predict probabilities with the logistic regression baseline.
+
+    AUDIT FIX: Uses the same OneHotEncoder fitted on training data.
+    Unseen categories are ignored (all-zero row), not mapped to -1.
+    """
     X = X.copy()
-    for col, le in label_encoders.items():
+    for col in cat_cols:
         if col in X.columns:
-            # Handle unseen labels gracefully
-            X[col] = X[col].astype(str).map(
-                lambda v, _le=le: (
-                    _le.transform([v])[0] if v in _le.classes_
-                    else -1
-                )
-            )
-    X_scaled = scaler.transform(X)
-    return model.predict_proba(X_scaled)[:, 1]
+            X[col] = X[col].astype(str)
+
+    X_cat = ohe.transform(X[cat_cols])
+    X_num = X[num_cols].values
+    X_num_scaled = scaler.transform(X_num)
+    X_combined = np.hstack([X_num_scaled, X_cat])
+    return model.predict_proba(X_combined)[:, 1]
 
 
 # ---------------------------------------------------------------------------
@@ -353,21 +380,27 @@ def run_training_pipeline(data_dir: str | None = None) -> dict:
         )[:20]
     )
 
-    # Log experiment
+    # Log experiment — AUDIT FIX: extract params dynamically, not hardcoded
+    logged_param_keys = [
+        "n_estimators", "learning_rate", "max_depth", "num_leaves",
+        "subsample", "colsample_bytree", "min_child_samples",
+        "reg_alpha", "reg_lambda",
+    ]
+    lgbm_params = {
+        k: v for k, v in lgbm_model.get_params().items()
+        if k in logged_param_keys
+    }
+    lgbm_params["best_iteration"] = lgbm_model.best_iteration_
+    lgbm_params["optimal_threshold"] = optimal_t
+
     log_experiment(
-        name="lightgbm_v1",
-        params={
-            "n_estimators": 1000,
-            "learning_rate": 0.05,
-            "max_depth": 6,
-            "best_iteration": lgbm_model.best_iteration_,
-            "optimal_threshold": optimal_t,
-        },
+        name="lightgbm_v2",
+        params=lgbm_params,
         metrics_train=lgbm_metrics_train,
         metrics_val=lgbm_metrics_val,
         metrics_test=lgbm_metrics_test,
         feature_importance={k: int(v) for k, v in feat_importance.items()},
-        notes="Primary LightGBM model with temporal split and seller history features.",
+        notes="AUDIT FIX v2: regularised (depth 5, 31 leaves), dynamic param logging.",
     )
 
     # Save model + artefacts
@@ -393,11 +426,11 @@ def run_training_pipeline(data_dir: str | None = None) -> dict:
     # ------------------------------------------------------------------
     logger.info("=" * 60)
     logger.info("Step 5b: Training Logistic Regression baseline")
-    lr_model, lr_scaler, lr_encoders = train_logistic_regression(X_train, y_train)
+    lr_model, lr_scaler, lr_ohe, lr_cat_cols, lr_num_cols = train_logistic_regression(X_train, y_train)
 
-    lr_prob_val = predict_lr(lr_model, lr_scaler, lr_encoders, X_val)
-    lr_prob_test = predict_lr(lr_model, lr_scaler, lr_encoders, X_test)
-    lr_prob_train = predict_lr(lr_model, lr_scaler, lr_encoders, X_train)
+    lr_prob_val = predict_lr(lr_model, lr_scaler, lr_ohe, lr_cat_cols, lr_num_cols, X_val)
+    lr_prob_test = predict_lr(lr_model, lr_scaler, lr_ohe, lr_cat_cols, lr_num_cols, X_test)
+    lr_prob_train = predict_lr(lr_model, lr_scaler, lr_ohe, lr_cat_cols, lr_num_cols, X_train)
 
     lr_t = find_optimal_threshold(y_val.values, lr_prob_val)
     lr_metrics_train = compute_metrics(y_train.values, lr_prob_train, lr_t)
@@ -412,12 +445,12 @@ def run_training_pipeline(data_dir: str | None = None) -> dict:
                 lr_metrics_test["recall"])
 
     log_experiment(
-        name="logistic_regression_baseline",
-        params={"max_iter": 1000, "optimal_threshold": lr_t},
+        name="logistic_regression_v2",
+        params={"max_iter": 1000, "encoding": "OneHotEncoder", "optimal_threshold": lr_t},
         metrics_train=lr_metrics_train,
         metrics_val=lr_metrics_val,
         metrics_test=lr_metrics_test,
-        notes="Baseline logistic regression for comparison.",
+        notes="AUDIT FIX v2: OneHotEncoder replaces LabelEncoder.",
     )
 
     results["logistic_regression"] = {
