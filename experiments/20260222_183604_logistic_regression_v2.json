@@ -1,0 +1,58 @@
+{
+  "experiment_name": "logistic_regression_v2",
+  "timestamp": "20260222_183604",
+  "parameters": {
+    "max_iter": 1000,
+    "encoding": "OneHotEncoder",
+    "optimal_threshold": 0.69
+  },
+  "metrics": {
+    "train": {
+      "pr_auc": 0.21075747205456138,
+      "roc_auc": 0.7157693876274337,
+      "f1": 0.27219022300989515,
+      "precision": 0.25392670157068065,
+      "recall": 0.2932845321451305,
+      "recall_at_50_precision": 0.00015913430935709738,
+      "threshold": 0.69,
+      "confusion_matrix": {
+        "tp": 1843,
+        "fp": 5415,
+        "fn": 4441,
+        "tn": 59676
+      }
+    },
+    "validation": {
+      "pr_auc": 0.15298655091813365,
+      "roc_auc": 0.76768752831108,
+      "f1": 0.23990772779700115,
+      "precision": 0.1908256880733945,
+      "recall": 0.32298136645962733,
+      "recall_at_50_precision": 0.0,
+      "threshold": 0.69,
+      "confusion_matrix": {
+        "tp": 208,
+        "fp": 882,
+        "fn": 436,
+        "tn": 11445
+      }
+    },
+    "test": {
+      "pr_auc": 0.11777333795367136,
+      "roc_auc": 0.640784861064401,
+      "f1": 0.15031921067904816,
+      "precision": 0.1032283778397768,
+      "recall": 0.27641408751334046,
+      "recall_at_50_precision": 0.004268943436499467,
+      "threshold": 0.69,
+      "confusion_matrix": {
+        "tp": 259,
+        "fp": 2250,
+        "fn": 678,
+        "tn": 9466
+      }
+    }
+  },
+  "feature_importance_top20": null,
+  "notes": "AUDIT FIX v2: OneHotEncoder replaces LabelEncoder."
+}

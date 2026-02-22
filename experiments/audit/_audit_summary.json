@@ -1,0 +1,26 @@
+{
+  "A": {
+    "conclusion": "UNLIKELY: removal had negligible impact \u2014 features are mostly noise",
+    "experiment": "A: Remove seller history features"
+  },
+  "B": {
+    "conclusion": "HIGH VARIANCE: std=0.0905 \u2014 single split unreliable",
+    "experiment": "B: Rolling window temporal CV"
+  },
+  "C": {
+    "conclusion": "DRIFT DETECTED in 3 features: ['estimated_delivery_days', 'purchase_month', 'total_freight']. Consider removing or engineering more robust versions.",
+    "experiment": "C: Feature distribution drift (PSI)"
+  },
+  "D": {
+    "conclusion": "STABLE: mean Spearman \u03c1 = 0.918 \u2014 feature importance is temporally consistent",
+    "experiment": "D: Feature importance stability"
+  },
+  "E": {
+    "conclusion": "KEEP: dropping it hurts test PR-AUC by -0.0425",
+    "experiment": "E: Drop purchase_month"
+  },
+  "F": {
+    "conclusion": "SIGNIFICANT DEPENDENCY: 43% drop \u2014 estimated_delivery_days is critical but other features contribute",
+    "experiment": "F: Without estimated_delivery_days"
+  }
+}

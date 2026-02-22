@@ -31,7 +31,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.data import build_order_dataset
 from src.features import (
     CATEGORICAL_FEATURES,
-    compute_seller_history,
     engineer_features,
     get_feature_columns,
     prepare_for_training,
@@ -324,15 +323,12 @@ def run_training_pipeline(data_dir: str | None = None) -> dict:
     logger.info("Step 2: Temporal split")
     train_raw, val_raw, test_raw = temporal_split(raw_df)
 
-    # 3. Feature engineering
+    # 3. Feature engineering (seller features removed — Experiment A proved zero impact)
     logger.info("=" * 60)
     logger.info("Step 3: Feature engineering")
-    # Compute seller history from training data ONLY
     train_feat = engineer_features(train_raw)
-    seller_stats = compute_seller_history(train_feat)
-    # Apply same seller stats to val and test (look-up, no leakage)
-    val_feat = engineer_features(val_raw, seller_stats)
-    test_feat = engineer_features(test_raw, seller_stats)
+    val_feat = engineer_features(val_raw)
+    test_feat = engineer_features(test_raw)
 
     # 4. Prepare features
     X_train, y_train = prepare_for_training(train_feat)
@@ -409,7 +405,6 @@ def run_training_pipeline(data_dir: str | None = None) -> dict:
     joblib.dump(lgbm_model, model_path)
 
     # Save seller_stats and optimal_threshold for serving
-    joblib.dump(seller_stats, MODELS_DIR / "seller_stats.joblib")
     joblib.dump(optimal_t, MODELS_DIR / "optimal_threshold.joblib")
     # Save feature column list for serving
     joblib.dump(list(X_train.columns), MODELS_DIR / "feature_columns.joblib")

@@ -1,0 +1,131 @@
+{
+  "experiment": "D: Feature importance stability",
+  "hypothesis": "Feature importance rankings change across time",
+  "num_windows": 7,
+  "correlations": [
+    {
+      "period_1": "2017Q1",
+      "period_2": "2017Q2",
+      "spearman_rho": 0.93,
+      "p_value": 0.0
+    },
+    {
+      "period_1": "2017Q2",
+      "period_2": "2017Q3",
+      "spearman_rho": 0.9608,
+      "p_value": 0.0
+    },
+    {
+      "period_1": "2017Q3",
+      "period_2": "2017Q4",
+      "spearman_rho": 0.8788,
+      "p_value": 0.0
+    },
+    {
+      "period_1": "2017Q4",
+      "period_2": "2018Q1",
+      "spearman_rho": 0.9125,
+      "p_value": 0.0
+    },
+    {
+      "period_1": "2018Q1",
+      "period_2": "2018Q2",
+      "spearman_rho": 0.908,
+      "p_value": 0.0
+    },
+    {
+      "period_1": "2018Q2",
+      "period_2": "2018Q3",
+      "spearman_rho": 0.9202,
+      "p_value": 0.0
+    }
+  ],
+  "mean_spearman_rho": 0.9184,
+  "window_summaries": [
+    {
+      "quarter": "2017Q1",
+      "n": 4979,
+      "late_rate": 0.0438,
+      "top5": [
+        "estimated_delivery_days",
+        "total_freight",
+        "purchase_hour",
+        "product_weight_g",
+        "freight_price_ratio"
+      ]
+    },
+    {
+      "quarter": "2017Q2",
+      "n": 9056,
+      "late_rate": 0.0477,
+      "top5": [
+        "estimated_delivery_days",
+        "product_description_lenght",
+        "total_freight",
+        "product_category_name_english",
+        "customer_state"
+      ]
+    },
+    {
+      "quarter": "2017Q3",
+      "n": 12323,
+      "late_rate": 0.04,
+      "top5": [
+        "estimated_delivery_days",
+        "total_freight",
+        "product_description_lenght",
+        "product_category_name_english",
+        "customer_state"
+      ]
+    },
+    {
+      "quarter": "2017Q4",
+      "n": 17385,
+      "late_rate": 0.1007,
+      "top5": [
+        "estimated_delivery_days",
+        "product_category_name_english",
+        "customer_state",
+        "product_weight_g",
+        "purchase_month"
+      ]
+    },
+    {
+      "quarter": "2018Q1",
+      "n": 20789,
+      "late_rate": 0.1458,
+      "top5": [
+        "estimated_delivery_days",
+        "total_freight",
+        "product_category_name_english",
+        "purchase_month",
+        "customer_state"
+      ]
+    },
+    {
+      "quarter": "2018Q2",
+      "n": 19668,
+      "late_rate": 0.0509,
+      "top5": [
+        "estimated_delivery_days",
+        "product_category_name_english",
+        "customer_state",
+        "total_freight",
+        "product_description_lenght"
+      ]
+    },
+    {
+      "quarter": "2018Q3",
+      "n": 12530,
+      "late_rate": 0.0748,
+      "top5": [
+        "estimated_delivery_days",
+        "product_weight_g",
+        "total_freight",
+        "product_category_name_english",
+        "purchase_month"
+      ]
+    }
+  ],
+  "conclusion": "STABLE: mean Spearman \u03c1 = 0.918 \u2014 feature importance is temporally consistent"
+}

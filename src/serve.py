@@ -47,14 +47,6 @@ class PredictionRequest(BaseModel):
     payment_installments: int = Field(..., example=3)
     num_items: int = Field(1, example=1)
 
-    # Seller history (pre-aggregated by the platform)
-    seller_historical_late_pct: float = Field(0.081, example=0.12)
-    seller_avg_delivery_days: float = Field(12.6, example=14.3)
-    seller_order_count: int = Field(8, example=87)
-    seller_avg_review: float = Field(4.13, example=3.8)
-    seller_avg_freight: float = Field(20.0, example=22.5)
-    seller_avg_price: float = Field(120.7, example=150.0)
-
     estimated_delivery_days: float = Field(..., example=21)
     purchase_day_of_week: int = Field(..., ge=0, le=6, example=2)
     purchase_month: int = Field(..., ge=1, le=12, example=7)
@@ -166,13 +158,6 @@ def _build_feature_row(req: PredictionRequest) -> pd.DataFrame:
         "product_volume_cm3": (
             req.product_length_cm * req.product_height_cm * req.product_width_cm
         ),
-        # Seller history
-        "seller_order_count": req.seller_order_count,
-        "seller_avg_review": req.seller_avg_review,
-        "seller_historical_late_pct": req.seller_historical_late_pct,
-        "seller_avg_delivery_days": req.seller_avg_delivery_days,
-        "seller_avg_freight": req.seller_avg_freight,
-        "seller_avg_price": req.seller_avg_price,
     }
 
     df = pd.DataFrame([row])

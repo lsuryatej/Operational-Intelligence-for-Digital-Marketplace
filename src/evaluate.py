@@ -28,7 +28,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from src.data import build_order_dataset
 from src.features import (
     CATEGORICAL_FEATURES,
-    compute_seller_history,
     engineer_features,
     prepare_for_training,
 )
@@ -45,8 +44,7 @@ def load_model_artifacts():
     """Load the trained model and supporting artifacts."""
     model = joblib.load(MODELS_DIR / "lgbm_late_delivery.joblib")
     threshold = joblib.load(MODELS_DIR / "optimal_threshold.joblib")
-    seller_stats = joblib.load(MODELS_DIR / "seller_stats.joblib")
-    return model, threshold, seller_stats
+    return model, threshold
 
 
 # ---------------------------------------------------------------------------
@@ -181,14 +179,14 @@ def run_evaluation(data_dir: str | None = None) -> dict:
     Returns a structured report dict and saves it to experiments/.
     """
     logger.info("Loading model artifacts …")
-    model, threshold, seller_stats = load_model_artifacts()
+    model, threshold = load_model_artifacts()
 
     logger.info("Building dataset …")
     raw_df = build_order_dataset(data_dir)
     _, _, test_raw = temporal_split(raw_df)
 
     logger.info("Engineering features for test set …")
-    test_feat = engineer_features(test_raw, seller_stats)
+    test_feat = engineer_features(test_raw)
     X_test, y_test = prepare_for_training(test_feat)
 
     # Predictions
@@ -251,9 +249,8 @@ def run_evaluation(data_dir: str | None = None) -> dict:
         "error_analysis": errors,
         "practical_limitations": [
             "Model relies on platform-set estimated delivery dates; if estimation logic changes, model needs retraining.",
-            "New sellers with no history fall back to global averages — predictions less reliable for them.",
             "Sparse-data states (RR, AP, AC) may have poorly calibrated predictions.",
-            "Data covers 2016–2018; post-2018 logistics changes (COVID, new carriers) are not captured.",
+            "Data covers 2016-2018; post-2018 logistics changes (COVID, new carriers) are not captured.",
             f"At threshold {threshold}, the model trades off precision vs recall — "
             f"adjust threshold based on cost of false alarms vs missed late orders.",
         ],

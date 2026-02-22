@@ -88,13 +88,8 @@ ENGINEERED_NUMERIC = [
     "freight_price_ratio",
     # Product volume
     "product_volume_cm3",
-    # Seller history
-    "seller_order_count",
-    "seller_avg_review",
-    "seller_historical_late_pct",
-    "seller_avg_delivery_days",
-    "seller_avg_freight",
-    "seller_avg_price",
+    # NOTE: Seller history features removed after Experiment A
+    # proved they have zero impact on model performance.
 ]
 
 
@@ -155,44 +150,10 @@ def engineer_features(
         * out["product_width_cm"].fillna(0)
     )
 
-    # --- Seller history features ---
-    if seller_stats is not None:
-        out = out.merge(
-            seller_stats,
-            on="primary_seller_id",
-            how="left",
-            suffixes=("", "_hist"),
-        )
-        # Handle duplicate column names from merge
-        for col in seller_stats.columns:
-            if col == "primary_seller_id":
-                continue
-            hist_col = f"{col}_hist"
-            if hist_col in out.columns:
-                out[col] = out[hist_col]
-                out.drop(columns=[hist_col], inplace=True)
-    else:
-        # Fill with defaults when no seller history is available
-        for col in [
-            "seller_order_count", "seller_avg_review",
-            "seller_historical_late_pct", "seller_avg_delivery_days",
-            "seller_avg_freight", "seller_avg_price",
-        ]:
-            if col not in out.columns:
-                out[col] = np.nan
-
-    # --- Fill NaN seller stats with global medians ---
-    global_defaults = {
-        "seller_order_count": 8,       # median from profiling
-        "seller_avg_review": 4.13,     # mean from profiling
-        "seller_historical_late_pct": 0.081,  # global late rate
-        "seller_avg_delivery_days": 12.6,
-        "seller_avg_freight": 20.0,
-        "seller_avg_price": 120.7,
-    }
-    for col, default in global_defaults.items():
-        if col in out.columns:
-            out[col] = out[col].fillna(default)
+    # NOTE: Seller history features removed after Experiment A
+    # (audit validation) proved they have zero impact on model
+    # performance.  Original code computed per-seller aggregates
+    # from training data and merged them here.
 
     return out
 

@@ -1,0 +1,115 @@
+{
+  "experiment": "B: Rolling window temporal CV",
+  "hypothesis": "Single temporal split may land on anomalous boundary",
+  "num_folds": 10,
+  "folds": [
+    {
+      "val_month": "2017-10",
+      "train_size": 26627,
+      "val_size": 4506,
+      "val_late_rate": 0.0526,
+      "pr_auc": 0.09835806283151682,
+      "roc_auc": 0.6607037488398848,
+      "f1": 0.14173228346456693,
+      "best_iteration": 329
+    },
+    {
+      "val_month": "2017-11",
+      "train_size": 31133,
+      "val_size": 7340,
+      "val_late_rate": 0.1429,
+      "pr_auc": 0.20490768564438352,
+      "roc_auc": 0.6218758045410856,
+      "f1": 0.13107822410147993,
+      "best_iteration": 227
+    },
+    {
+      "val_month": "2017-12",
+      "train_size": 38473,
+      "val_size": 5539,
+      "val_late_rate": 0.0838,
+      "pr_auc": 0.23069663468330914,
+      "roc_auc": 0.7207047307626974,
+      "f1": 0.25231016472478907,
+      "best_iteration": 334
+    },
+    {
+      "val_month": "2018-01",
+      "train_size": 44012,
+      "val_size": 7109,
+      "val_late_rate": 0.0656,
+      "pr_auc": 0.11084365506945239,
+      "roc_auc": 0.648012138370184,
+      "f1": 0.08950617283950617,
+      "best_iteration": 164
+    },
+    {
+      "val_month": "2018-02",
+      "train_size": 51121,
+      "val_size": 6639,
+      "val_late_rate": 0.1598,
+      "pr_auc": 0.28494068011537343,
+      "roc_auc": 0.6816831912363401,
+      "f1": 0.18142857142857144,
+      "best_iteration": 166
+    },
+    {
+      "val_month": "2018-03",
+      "train_size": 57760,
+      "val_size": 7041,
+      "val_late_rate": 0.2135,
+      "pr_auc": 0.36796014609426864,
+      "roc_auc": 0.7013503389272976,
+      "f1": 0.39315665883931566,
+      "best_iteration": 708
+    },
+    {
+      "val_month": "2018-04",
+      "train_size": 64801,
+      "val_size": 6809,
+      "val_late_rate": 0.0532,
+      "pr_auc": 0.18060795074559288,
+      "roc_auc": 0.7437955638281372,
+      "f1": 0.18620689655172415,
+      "best_iteration": 795
+    },
+    {
+      "val_month": "2018-05",
+      "train_size": 71610,
+      "val_size": 6757,
+      "val_late_rate": 0.0823,
+      "pr_auc": 0.18867715466636298,
+      "roc_auc": 0.7141933767934854,
+      "f1": 0.22532588454376165,
+      "best_iteration": 613
+    },
+    {
+      "val_month": "2018-06",
+      "train_size": 78367,
+      "val_size": 6102,
+      "val_late_rate": 0.0136,
+      "pr_auc": 0.05222193938116797,
+      "roc_auc": 0.7698773162095133,
+      "f1": 0.1073170731707317,
+      "best_iteration": 1813
+    },
+    {
+      "val_month": "2018-07",
+      "train_size": 84469,
+      "val_size": 6177,
+      "val_late_rate": 0.0447,
+      "pr_auc": 0.11197301237730717,
+      "roc_auc": 0.6675145946769032,
+      "f1": 0.16534740545294635,
+      "best_iteration": 1166
+    }
+  ],
+  "pr_auc_mean": 0.1831,
+  "pr_auc_std": 0.0905,
+  "pr_auc_min": 0.0522,
+  "pr_auc_max": 0.368,
+  "roc_auc_mean": 0.693,
+  "roc_auc_std": 0.0432,
+  "our_single_split_pr_auc": 0.141,
+  "conclusion": "HIGH VARIANCE: std=0.0905 \u2014 single split unreliable"
+}
