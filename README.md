@@ -44,7 +44,7 @@ After deep data exploration of ~100K orders across 9 linked tables, **late deliv
 
 ## 🛠️ ML Audit & Quality Improvement
 
-This project underwent a rigorous **Senior ML Audit** which identified and resolved critical issues:
+This project underwent a rigorous **ML Audit** which identified and resolved critical issues:
 
 1.  **LR Baseline Collapse (Fixed)**: Replaced `LabelEncoder` with `OneHotEncoder` to fix a double-encoding bug and ordinal mis-specification. **Test ROC-AUC improved 0.55 → 0.64**.
 2.  **Overfitting (Regularized)**: Reduced LightGBM complexity (`max_depth` 7→5, `num_leaves` 63→31). Reduced overfit ratio from **3.4x to 2.7x** while maintaining validation performance.
@@ -140,7 +140,3 @@ curl -X POST http://localhost:8000/predict \
 2.  **Estimate dependency**: Model is 43% dependent on platform-set estimated delivery dates.
 3.  **Geographic sparsity**: Remote states (RR, AP, AC) have sparse data → less calibrated predictions.
 4.  **Temporal Drift**: 3 features (month, delivery estimate, freight) show moderate-to-high drift across splits.
-
----
-
-*This project was built with Antigravity, an agentic AI coding assistant by Google DeepMind.*
