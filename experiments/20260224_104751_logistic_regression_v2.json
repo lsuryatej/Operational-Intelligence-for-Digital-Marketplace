@@ -1,6 +1,6 @@
 {
   "experiment_name": "logistic_regression_v2",
-  "timestamp": "20260222_183604",
+  "timestamp": "20260224_104751",
   "parameters": {
     "max_iter": 1000,
     "encoding": "OneHotEncoder",

@@ -1,6 +1,6 @@
 {
   "experiment_name": "lightgbm_v2",
-  "timestamp": "20260222_183603",
+  "timestamp": "20260224_104751",
   "parameters": {
     "colsample_bytree": 0.7,
     "learning_rate": 0.01,

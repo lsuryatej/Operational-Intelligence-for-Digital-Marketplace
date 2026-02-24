@@ -10,38 +10,48 @@ After deep data exploration of ~100K orders across 9 linked tables, **late deliv
 
 **Key data insight:** Late orders (8.1% of total) have a mean review score of **2.57** vs **4.29** for on-time orders. Preventing late deliveries directly prevents bad reviews, reduces refunds/vouchers, and improves seller experience.
 
-## 📊 Results
+## 📊 Results (Final v2)
 
-| Metric | LightGBM | Logistic Regression (Baseline) |
-|--------|----------|-------------------------------|
-| **PR-AUC** | **0.1345** | 0.086 |
-| **ROC-AUC** | **0.71** | 0.56 |
-| **F1** | **0.21** | 0.10 |
-| Precision | 0.15 | 0.06 |
-| Recall | 0.38 | 0.24 |
+| Metric | LightGBM (Post-Audit) | Logistic Regression (Baseline v2) |
+|--------|-----------------------|---------------------------------|
+| **PR-AUC** | **0.1308** | 0.1178 |
+| **ROC-AUC** | **0.7070** | 0.6408 |
+| **F1** | **0.1968** | 0.1503 |
+| Precision | 0.1391 | 0.1032 |
+| Recall | 0.3362 | 0.2764 |
 
-> **Note on PR-AUC:** With 7.4% positive rate, a random classifier achieves PR-AUC ≈ 0.074. Our model at 0.1345 is **82% better than random**. ROC-AUC of 0.71 confirms the model has meaningful discriminative ability.
+> **Note on PR-AUC:** With 7.4% positive rate in the test set, a random classifier achieves PR-AUC ≈ 0.074. Our model at 0.1308 is **76% better than random**. ROC-AUC of 0.71 confirms the model has meaningful discriminative ability.
 
 ## 🏗️ Project Structure
 
 ```
 ├── README.md                      # This file
+├── Makefile                       # Automation for common tasks
 ├── requirements.txt               # Pinned Python dependencies
 ├── Dockerfile                     # Containerized deployment
-├── notebooks/
-│   └── 01_eda.ipynb              # Data exploration & problem framing
+├── notebooks/                     # Exploratory Data Analysis
 ├── src/
 │   ├── data.py                   # Data loading, joining, cleaning
 │   ├── features.py               # Feature engineering (leakage-safe)
-│   ├── train.py                  # Training pipeline + experiment logging
-│   ├── evaluate.py               # Metrics, error analysis, segment analysis
-│   └── serve.py                  # FastAPI deployment with SHAP
+│   ├── train.py                  # Training pipeline + dynamic logging
+│   ├── evaluate.py               # Metrics, error analysis, segments
+│   └── serve.py                  # FastAPI deployment with SHAP explanations
 ├── models/                        # Serialized model artifacts
-├── experiments/                   # Tracked experiment results (JSON)
-├── tests/
-│   └── test_api.py               # API integration tests
-└── ai_chat_logs/                  # AI conversation exports
+├── experiments/                   # Tracked experiments & Audit results
+├── tests/                         # API integration tests
+└── ai_chat_logs/                  # Development & Audit history
 ```
+
+## 🛠️ ML Audit & Quality Improvement
+
+This project underwent a rigorous **Senior ML Audit** which identified and resolved critical issues:
+
+1.  **LR Baseline Collapse (Fixed)**: Replaced `LabelEncoder` with `OneHotEncoder` to fix a double-encoding bug and ordinal mis-specification. **Test ROC-AUC improved 0.55 → 0.64**.
+2.  **Overfitting (Regularized)**: Reduced LightGBM complexity (`max_depth` 7→5, `num_leaves` 63→31). Reduced overfit ratio from **3.4x to 2.7x** while maintaining validation performance.
+3.  **Parameter Transparency**: Fixed experiment logging to dynamically extract model hyperparameters instead of using hardcoded values.
+4.  **Leakage/Noise Reduction**: Removed 6 seller history features after diagnostic experiments proved they added zero signal and posed a potential leakage risk.
+
+Full details in [audit_validation_report.md](./audit_validation_report.md).
 
 ## 🚀 Quick Start
 
@@ -57,45 +67,25 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+make setup
 ```
 
-### 2. Train the Model
+### 2. Run Pipeline
 
 ```bash
-python src/train.py
+make train      # Train v2 models
+make evaluate   # Generate evaluation report
+make test       # Run API tests
+make serve      # Start API locally
 ```
 
-This will:
-- Download the Olist dataset via kagglehub (first run only)
-- Apply temporal train/val/test split
-- Train LightGBM (primary) and Logistic Regression (baseline)
-- Save model artifacts to `models/`
-- Log experiments to `experiments/`
-
-### 3. Evaluate
-
-```bash
-python src/evaluate.py
-```
-
-Produces a detailed evaluation report with segment-level analysis and error patterns.
-
-### 4. Serve the API
-
-```bash
-python src/serve.py
-# or
-uvicorn src.serve:app --reload --port 8000
-```
-
-### 5. Test the API
+### 3. API Usage
 
 ```bash
 # Health check
 curl http://localhost:8000/health
 
-# Predict (high-risk example)
+# Predict
 curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
   -d '{
@@ -111,36 +101,11 @@ curl -X POST http://localhost:8000/predict \
     "payment_type": "boleto",
     "payment_installments": 1,
     "num_items": 2,
-    "seller_historical_late_pct": 0.25,
-    "seller_avg_delivery_days": 22.0,
-    "seller_order_count": 15,
-    "seller_avg_review": 3.2,
-    "seller_avg_freight": 35.0,
-    "seller_avg_price": 95.0,
     "estimated_delivery_days": 15,
     "purchase_day_of_week": 5,
     "purchase_month": 12,
     "purchase_hour": 22
   }'
-```
-
-### 6. Run Tests
-
-```bash
-pytest tests/test_api.py -v
-```
-
-### 7. Docker
-
-```bash
-# Build (after training — needs models/ directory)
-docker build -t marketplace-ml .
-
-# Run
-docker run -p 8000:8000 marketplace-ml
-
-# Test
-curl http://localhost:8000/health
 ```
 
 ## 🔍 API Response Format
@@ -151,9 +116,9 @@ curl http://localhost:8000/health
   "probability": 0.73,
   "risk_level": "high",
   "top_contributing_features": [
-    {"feature": "seller_historical_late_pct", "shap_value": 0.18, "direction": "increases risk"},
-    {"feature": "estimated_delivery_days", "shap_value": -0.12, "direction": "decreases risk"},
-    {"feature": "product_weight_g", "shap_value": 0.08, "direction": "increases risk"}
+    {"feature": "estimated_delivery_days", "shap_value": 0.18, "direction": "increases risk"},
+    {"feature": "freight_value", "shap_value": 0.12, "direction": "increases risk"},
+    {"feature": "customer_state", "shap_value": -0.08, "direction": "decreases risk"}
   ],
   "recommended_action": "Flag for expedited handling or proactive customer notification about potential delay."
 }
@@ -164,15 +129,18 @@ curl http://localhost:8000/health
 | Decision | Rationale |
 |----------|-----------|
 | **Temporal split** (not random) | Mimics production: predict future orders from past data |
-| **No class weighting** | 8% imbalance is mild; threshold tuning is more stable than loss reweighting |
-| **LightGBM over DL** | Tabular data, ~100K rows — GBTs are the right tool; also enables fast SHAP |
+| **No class weighting** | 8% imbalance is mild; threshold tuning (optimal F1) is more stable than loss reweighting |
+| **LightGBM over DL** | Tabular data — GBTs are the right tool; also enables fast SHAP explanations |
 | **PR-AUC as primary metric** | ROC-AUC is inflated by true negatives; PR-AUC focuses on the late-order class |
-| **Seller history from train only** | Prevents target leakage; new sellers fall back to global statistics |
+| **Removed Seller History** | Auditing proved these features were noise in the current dataset; simplifies cold-start API logic |
 
 ## ⚠️ Practical Limitations
 
-1. **Close-call blindness**: 58.5% of missed late orders are ≤3 days late — the model struggles with borderline cases
-2. **Estimated delivery date dependency**: If the platform changes how it sets estimates, the model needs retraining
-3. **Cold-start sellers**: New sellers with no history get global defaults — less reliable predictions
-4. **Geographic sparsity**: Remote states (RR, AP, AC) have sparse data → less calibrated predictions
-5. **Data vintage**: Trained on 2016–2018 data; post-2018 logistics changes are not captured
+1.  **Close-call blindness**: 60.3% of missed late orders are ≤3 days late — the model struggles with borderline cases.
+2.  **Estimate dependency**: Model is 43% dependent on platform-set estimated delivery dates.
+3.  **Geographic sparsity**: Remote states (RR, AP, AC) have sparse data → less calibrated predictions.
+4.  **Temporal Drift**: 3 features (month, delivery estimate, freight) show moderate-to-high drift across splits.
+
+---
+
+*This project was built with Antigravity, an agentic AI coding assistant by Google DeepMind.*

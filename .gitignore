@@ -22,8 +22,12 @@ env/
 .DS_Store
 Thumbs.db
 
-# Model artifacts (large files)
-models/*.joblib
+# Model artifacts (keep for deployment)
+# models/*.joblib  <-- commented out to allow committing
 
 # Data cache (downloaded via kagglehub)
 data/
+
+# Testing
+.pytest_cache/
+.ipynb_checkpoints/
