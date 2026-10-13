@@ -1,16 +1,18 @@
 # Operational Intelligence for Digital Marketplace
 
-**Late Delivery Prediction** — An ML system that predicts whether an order on a Brazilian e-commerce marketplace will be delivered late, enabling proactive operational intervention.
+**Late Delivery Prediction**: an ML system that predicts whether an order on a Brazilian e-commerce marketplace will be delivered late, enabling proactive operational intervention.
 
 ## 🎯 Problem Statement
 
 Working with the operations team at a mid-size online marketplace connecting independent sellers to buyers across Brazil. The client's core pain: *"Margins are getting squeezed, sellers complain, buyers leave bad reviews, and we don't know where to focus."*
 
-After deep data exploration of ~100K orders across 9 linked tables, **late delivery prediction** was identified as the highest-value ML intervention — it sits at the causal intersection of all three pain points (margins, seller friction, buyer dissatisfaction).
+After data exploration of ~100K orders across 8 linked tables (the geolocation table is not loaded), **late delivery prediction** was identified as the highest-value ML intervention; it sits at the causal intersection of all three pain points (margins, seller friction, buyer dissatisfaction).
 
 **Key data insight:** Late orders (8.1% of total) have a mean review score of **2.57** vs **4.29** for on-time orders. Preventing late deliveries directly prevents bad reviews, reduces refunds/vouchers, and improves seller experience.
 
 ## 📊 Results (Final v2)
+
+Trained and evaluated on ~97K delivered orders with a temporal split (train / validation / test = 73.6 / 13.4 / 13.0 percent). Metrics below are on the test set.
 
 | Metric | LightGBM (Post-Audit) | Logistic Regression (Baseline v2) |
 |--------|-----------------------|---------------------------------|
@@ -46,10 +48,10 @@ After deep data exploration of ~100K orders across 9 linked tables, **late deliv
 
 This project underwent a rigorous **ML Audit** which identified and resolved critical issues:
 
-1.  **LR Baseline Collapse (Fixed)**: Replaced `LabelEncoder` with `OneHotEncoder` to fix a double-encoding bug and ordinal mis-specification. **Test ROC-AUC improved 0.55 → 0.64**.
-2.  **Overfitting (Regularized)**: Reduced LightGBM complexity (`max_depth` 7→5, `num_leaves` 63→31). Reduced overfit ratio from **3.4x to 2.7x** while maintaining validation performance.
+1.  **Logistic Baseline Encoding (Fixed)**: The logistic baseline fed ordinal integer codes for nominal categories into a linear model. One-hot encoding raised the baseline's test ROC-AUC from 0.558 to 0.641. This fix applied to the logistic baseline, not LightGBM.
+2.  **LightGBM Overfitting (Regularisation Tightened)**: The model was overfitting (train/validation PR-AUC ratio 3.40). Regularisation was tightened (`max_depth` 7→5, `num_leaves` 63→31, `min_child_samples` 30→50, `reg_alpha` 0.1→0.5, `reg_lambda` 1.0→2.0). The ratio fell to 2.69 and validation PR-AUC rose 0.1366 to 0.1411, while test PR-AUC moved 0.1345 to 0.1308, within noise.
 3.  **Parameter Transparency**: Fixed experiment logging to dynamically extract model hyperparameters instead of using hardcoded values.
-4.  **Leakage/Noise Reduction**: Removed 6 seller history features after diagnostic experiments proved they added zero signal and posed a potential leakage risk.
+4.  **Seller History Features (Removed)**: A pipeline bug computed these features without seller statistics at training time, so they were constant in training and the 0.0000 ablation delta was guaranteed. They were removed; doing this properly needs out-of-fold seller statistics.
 
 Full details in [audit_validation_report.md](./audit_validation_report.md).
 
@@ -110,6 +112,8 @@ curl -X POST http://localhost:8000/predict \
 
 ## 🔍 API Response Format
 
+`top_contributing_features` returns the top 5 features by absolute SHAP value, in log-odds units (the example below is shortened to 3).
+
 ```json
 {
   "prediction": "late",
@@ -129,14 +133,23 @@ curl -X POST http://localhost:8000/predict \
 | Decision | Rationale |
 |----------|-----------|
 | **Temporal split** (not random) | Mimics production: predict future orders from past data |
-| **No class weighting** | 8% imbalance is mild; threshold tuning (optimal F1) is more stable than loss reweighting |
-| **LightGBM over DL** | Tabular data — GBTs are the right tool; also enables fast SHAP explanations |
+| **No class weighting for LightGBM** | 8% imbalance is mild; threshold tuning (optimal F1) is more stable than loss reweighting. The logistic baseline is class-weighted. |
+| **LightGBM over DL** | Tabular data: GBTs are the right tool; also enables fast SHAP explanations |
 | **PR-AUC as primary metric** | ROC-AUC is inflated by true negatives; PR-AUC focuses on the late-order class |
-| **Removed Seller History** | Auditing proved these features were noise in the current dataset; simplifies cold-start API logic |
+| **Removed Seller History** | A pipeline bug made these features constant in training, so they never contributed; doing this properly needs out-of-fold seller statistics. Removal also simplifies cold-start API logic |
 
 ## ⚠️ Practical Limitations
 
-1.  **Close-call blindness**: 60.3% of missed late orders are ≤3 days late — the model struggles with borderline cases.
-2.  **Estimate dependency**: Model is 43% dependent on platform-set estimated delivery dates.
+1.  **Close-call blindness**: 60.3% of missed late orders are ≤3 days late; the model struggles with borderline cases.
+2.  **Estimate dependency**: Without the platform's estimated delivery date, test PR-AUC falls from 0.131 to 0.075, which is the random baseline (0.074).
 3.  **Geographic sparsity**: Remote states (RR, AP, AC) have sparse data → less calibrated predictions.
 4.  **Temporal Drift**: 3 features (month, delivery estimate, freight) show moderate-to-high drift across splits.
+
+## 🚧 Known Limitations
+
+- Without the delivery estimate, test performance falls to chance (PR-AUC 0.075 against a 0.074 random baseline; ROC-AUC 0.525).
+- The test set informed one feature decision (Experiment E, keeping `purchase_month`), so it is not a fully untouched holdout.
+- The API's recommended-action bands (0.4 / 0.7) aren't derived from the 0.10 decision threshold, so an order scored between 0.10 and 0.40 is predicted late but gets "No action needed".
+- Serving hardcodes some product attributes (photos, name and description length).
+- The API tests don't load the model, so the predict tests can pass on a 503.
+- The Dockerfile HEALTHCHECK calls `curl`, which the slim base image doesn't include.

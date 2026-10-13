@@ -1,8 +1,18 @@
 # Audit Validation Report
 
+## Corrections (October 2026)
+
+- Fix 2: the defect was ordinal integer codes for nominal categories in the logistic baseline, not double-encoding; the fix applied to the logistic baseline only.
+- Fix 2: "Train > Val > Test" holds for PR-AUC only, which isn't comparable across splits; the baseline's ROC-AUC still shows train below validation.
+- Fix 3: renamed from "Over-Regularisation"; the model was overfitting and regularisation was tightened.
+- Fix 3: added the test PR-AUC change (0.1345 to 0.1308), which the original report omitted.
+- Fix 4: the seller features were constant in training due to a pipeline bug, so the 0.0000 delta was guaranteed, not evidence of noise.
+- Experiment F: the 43% figure is a relative PR-AUC drop, and the ablated model sits at the random baseline; the "~57% of signal" claim was removed.
+- Verification: noted that the API predict tests do not load the model.
+
 ## Summary
 
-9 audit issues investigated. 4 resulted in code changes with measured improvement. 5 were diagnostic experiments yielding important findings but no code changes needed.
+9 audit issues investigated. 4 resulted in code changes. 5 were diagnostic experiments yielding important findings but no code changes needed.
 
 ---
 
@@ -15,30 +25,30 @@
 | **What was changed** | Replaced hardcoded dict with `lgbm_model.get_params()` extraction; now logs all 9 hyperparameters dynamically |
 | **Measured improvement** | Experiment log now records correct values: `n_estimators=2000, learning_rate=0.01, max_depth=5, num_leaves=31` ✅ |
 
-### Fix 2: LR Double-Encoding Bug
+### Fix 2: Logistic Baseline Ordinal Encoding
 | Item | Detail |
 |------|--------|
-| **What was wrong** | `LabelEncoder` re-encoded `pd.Categorical` integer codes as strings, creating inconsistent encodings across splits. Also imposed ordinal relationships on nominal features |
+| **What was wrong** | The logistic baseline fed ordinal integer codes for nominal categories into a linear model. This applied to the logistic baseline, not LightGBM |
 | **What was changed** | Replaced `LabelEncoder` with `OneHotEncoder(handle_unknown="ignore", drop="first")`, encoding raw strings separately from numeric scaling |
-| **Before** | Train ROC-AUC 0.667 < Val 0.740 (pathological), Test ROC-AUC **0.558** |
-| **After** | Train > Val > Test (normal), Test ROC-AUC **0.641** (+14.9%) ✅ |
+| **Before** | Train ROC-AUC 0.667 < Val 0.740, Test ROC-AUC **0.558** |
+| **After** | One-hot encoding raised the baseline's test ROC-AUC from 0.558 to **0.641** (+14.9%) ✅. Train > Val > Test holds for PR-AUC only, and PR-AUC isn't comparable across splits because base rates differ (8.8%, 5.0%, 7.4%). ROC-AUC still shows train below validation (0.7158 < 0.7677) |
 
-### Fix 3: LightGBM Over-Regularisation
+### Fix 3: LightGBM Overfitting (Regularisation Tightened)
 | Item | Detail |
 |------|--------|
-| **What was wrong** | `max_depth=7, num_leaves=63, min_child_samples=30, reg_alpha=0.1, reg_lambda=1.0` → 3.4× train/val overfit ratio |
-| **What was changed** | `max_depth=5, num_leaves=31, min_child_samples=50, reg_alpha=0.5, reg_lambda=2.0` |
-| **Before** | Train PR-AUC 0.464, overfit ratio **3.4×** |
-| **After** | Train PR-AUC 0.380, overfit ratio **2.7×** (↓21%), Val PR-AUC stable at 0.141 ✅ |
+| **What was wrong** | The model was overfitting: `max_depth=7, num_leaves=63, min_child_samples=30, reg_alpha=0.1, reg_lambda=1.0` → train/validation PR-AUC ratio 3.40 |
+| **What was changed** | Regularisation tightened: `max_depth` 7→5, `num_leaves` 63→31, `min_child_samples` 30→50, `reg_alpha` 0.1→0.5, `reg_lambda` 1.0→2.0 |
+| **Before** | Train PR-AUC 0.464, overfit ratio **3.40** |
+| **After** | Train PR-AUC 0.380, overfit ratio **2.69**; validation PR-AUC rose 0.1366 to 0.1411, while test PR-AUC moved 0.1345 to 0.1308, within noise |
 
 ### Fix 4: Remove Dead Seller Features (from Experiment A)
 | Item | Detail |
 |------|--------|
-| **What was wrong** | 6 seller history features (order count, avg review, late %, etc.) added complexity and a potential leakage vector |
+| **What was wrong** | 6 seller history features (order count, avg review, late %, etc.). A pipeline bug computed these features without seller statistics at training time, so they were constant in training and the 0.0000 ablation delta was guaranteed |
 | **What was changed** | Removed all 6 features from [features.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/features.py), [train.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/train.py), [evaluate.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/evaluate.py), [serve.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/serve.py), and [tests/test_api.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/tests/test_api.py) |
-| **Before** | 34 features, all metrics X |
-| **After** | 28 features, **identical** metrics (0.0000 delta on all PR-AUC, ROC-AUC, F1) ✅ |
-| **Impact** | Simpler model, smaller API payload, eliminated leakage risk |
+| **Before** | 34 features (6 of them constant in training) |
+| **After** | 28 features, **identical** metrics (0.0000 delta on all PR-AUC, ROC-AUC, F1) |
+| **Impact** | Simpler model and smaller API payload. They were removed; doing this properly needs out-of-fold seller statistics |
 
 ---
 
@@ -49,7 +59,7 @@
 |------|--------|
 | **Hypothesis** | Single temporal split may be anomalous |
 | **Result** | 10 folds, PR-AUC range **0.052–0.368**, mean=0.183, std=**0.091** |
-| **Finding** | HIGH VARIANCE — driven by base rate swings (late rate 1.4%–21.4% across months). Our single split PR-AUC (0.141) is below the mean (0.183), so performance is conservative estimate |
+| **Finding** | HIGH VARIANCE, driven by base rate swings (late rate 1.4%–21.4% across months). Our single split PR-AUC (0.141) is below the mean (0.183), so performance is conservative estimate |
 | **Action** | No code change. Document that single-split evaluation understates average performance |
 
 ### Experiment C: Feature Distribution Drift (PSI)
@@ -58,28 +68,28 @@
 | **Hypothesis** | Key features shift distribution across temporal splits |
 | **Result** | 3 of 10 features have significant drift |
 | **Findings** | [purchase_month](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/experiments/run_audit_experiments.py#461-498): PSI=**8.0** (extreme, by construction), `estimated_delivery_days`: PSI=**0.63** (high), `total_freight`: PSI=**0.26** (moderate). Other 7 features stable (PSI < 0.03) |
-| **Action** | No removal — Experiments E and F showed removing these features hurts performance. Accept drift as inherent to temporal data |
+| **Action** | No removal: Experiments E and F showed removing these features hurts performance. Accept drift as inherent to temporal data |
 
 ### Experiment D: Feature Importance Stability
 | Item | Detail |
 |------|--------|
 | **Hypothesis** | Feature rankings change across time |
 | **Result** | Mean Spearman ρ = **0.918** across quarterly windows |
-| **Finding** | STABLE — feature importance is temporally consistent despite base rate variation ✅ |
+| **Finding** | STABLE: feature importance is temporally consistent despite base rate variation ✅ |
 
 ### Experiment E: Drop purchase_month
 | Item | Detail |
 |------|--------|
 | **Hypothesis** | [purchase_month](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/experiments/run_audit_experiments.py#461-498) creates temporal leak risk (PSI=8.0) |
 | **Result** | Removing it: Val PR-AUC +0.028, but Test ROC-AUC collapses **0.707 → 0.554** |
-| **Finding** | KEEP — despite extreme drift, [purchase_month](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/experiments/run_audit_experiments.py#461-498) encodes real seasonal signal |
+| **Finding** | KEEP: despite extreme drift, [purchase_month](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/experiments/run_audit_experiments.py#461-498) encodes real seasonal signal |
 
 ### Experiment F: Without estimated_delivery_days
 | Item | Detail |
 |------|--------|
 | **Hypothesis** | Model may be wrapping a platform heuristic |
-| **Result** | Test PR-AUC drops from 0.131 → 0.075 (**43% drop**), ROC-AUC: 0.707 → 0.525 |
-| **Finding** | SIGNIFICANT DEPENDENCY but not total collapse. Other features contribute ~57% of signal independently. Model adds value beyond the delivery estimate |
+| **Result** | Test PR-AUC drops from 0.131 → 0.075 (43% relative drop), ROC-AUC: 0.707 → 0.525 |
+| **Finding** | Without the platform's estimated delivery date, test PR-AUC falls from 0.131 to 0.075, which is the random baseline (0.074) |
 
 ---
 
@@ -92,4 +102,4 @@
 | LR v2 (OHE) | Val | **0.153** | 0.768 | 0.240 | 28 |
 | LR v2 (OHE) | Test | **0.118** | 0.641 | 0.150 | 28 |
 
-**Verification**: 6/6 pytest pass, [evaluate.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/evaluate.py) clean, [train.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/train.py) clean.
+**Verification**: 6/6 pytest pass (the 4 predict tests do not load the model and can pass on a 503), [evaluate.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/evaluate.py) clean, [train.py](file:///Users/suryatejlalam/Operational-Intelligence-for-Digital-Marketplace/src/train.py) clean.
